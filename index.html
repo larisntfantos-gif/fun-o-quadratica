@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Desafio da Função Quadrática</title>
+<style>
+body{font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);margin:0;padding:20px}
+.card{max-width:850px;margin:auto;background:#fff;border-radius:25px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+h1{text-align:center;color:#5a3fc0}.top{display:flex;justify-content:space-between;font-weight:bold}
+.progress-bg{height:18px;background:#ddd;border-radius:20px;margin:15px 0}
+#progress{height:100%;width:0;background:#667eea;border-radius:20px;transition:.4s}
+button{width:100%;padding:14px;margin:8px 0;border:none;border-radius:12px;background:#f2f2f2;cursor:pointer;transition:.2s}
+button:hover{transform:translateY(-2px)} .correct{background:#4CAF50!important;color:#fff}.wrong{background:#f44336!important;color:#fff}
+.restart{background:#667eea;color:#fff} canvas{display:none;border:1px solid #ccc;margin:15px auto}
+</style></head><body><div class="card">
+<h1>📐 Desafio da Função Quadrática</h1>
+<div class="top"><span id="nivel"></span><span>Pontos: <span id="pts">0</span></span></div>
+<p>Pergunta <span id="num">1</span> de 15</p>
+<div class="progress-bg"><div id="progress"></div></div>
+<h2 id="q"></h2><canvas id="graph" width="300" height="200"></canvas>
+<div id="ans"></div>
+<div id="end" style="display:none;text-align:center">
+<h2 id="score"></h2><p id="msg"></p><button class="restart" onclick="start()">Jogar Novamente</button></div>
+</div><script>
+const base=[{n:'Fácil',q:'Na função y=x², a parábola abre para:',a:['Cima','Baixo'],c:0},{n:'Fácil',q:'Observe o gráfico. A parábola possui valor:',a:['Mínimo','Máximo'],c:0,g:'up'},{n:'Fácil',q:'As raízes de x²−4=0 são:',a:['-2 e 2','-4 e 4'],c:0},{n:'Fácil',q:'Se a>0, a parábola abre para:',a:['Cima','Baixo'],c:0},{n:'Fácil',q:'Uma função quadrática pode ter no máximo:',a:['2 raízes reais','4 raízes reais'],c:0},{n:'Médio',q:'As raízes de x²−5x+6=0 são:',a:['1 e 6','2 e 3','-2 e -3','0 e 6'],c:1},{n:'Médio',q:'Observe o gráfico. A parábola possui valor:',a:['Máximo','Mínimo','Sem raízes','Sem vértice'],c:0,g:'down'},{n:'Médio',q:'Δ de x²−4x+3=0 é:',a:['4','1','8','16'],c:0},{n:'Médio',q:'Se Δ<0, a função possui:',a:['2 raízes reais','1 raiz','Nenhuma raiz real','3 raízes'],c:2},{n:'Médio',q:'O vértice representa:',a:['Máximo ou mínimo','Raiz','Intercepto','Delta'],c:0},{n:'Difícil',q:'Vértice de y=x²−6x+5:',a:['(3,-4)','(3,4)','(2,-4)','(2,4)'],c:0},{n:'Difícil',q:'Raízes de x²−7x+12=0:',a:['2 e 6','3 e 4','1 e 12','-3 e -4'],c:1},{n:'Difícil',q:'Observe o gráfico. A parábola possui:',a:['Valor máximo','Valor mínimo','Sem vértice','Sem raízes'],c:1,g:'up'},{n:'Difícil',q:'Eixo de simetria de y=x²−8x+7:',a:['x=4','x=8','x=2','x=7'],c:0},{n:'Difícil',q:'Vértice de y=-x²+4x−3:',a:['(2,-1)','(2,1)','(1,2)','(-2,1)'],c:1}];
+let qs=[],i=0,p=0;
+function shuffleQ(q){let o=q.a.map((t,idx)=>({t,c:idx===q.c}));for(let j=o.length-1;j>0;j--){let k=Math.floor(Math.random()*(j+1));[o[j],o[k]]=[o[k],o[j]];}return {...q,a:o.map(x=>x.t),c:o.findIndex(x=>x.c)};}
+function draw(t){graph.style.display='block';let c=graph.getContext('2d');c.clearRect(0,0,300,200);c.beginPath();c.moveTo(150,0);c.lineTo(150,200);c.moveTo(0,100);c.lineTo(300,100);c.stroke();c.beginPath();for(let x=-70;x<=70;x++){let y=(t==='up'?1:-1)*x*x/60;let px=150+x,py=100-y;x==-70?c.moveTo(px,py):c.lineTo(px,py)}c.strokeStyle='#667eea';c.lineWidth=3;c.stroke();}
+function load(){if(i>=qs.length){end.style.display='block';score.textContent=`Você acertou ${p} de 15!`;msg.textContent=p>=13?'🌟 Excelente!':p>=10?'🎉 Muito bem!':p>=7?'👍 Bom trabalho!':'📚 Continue praticando!';return;}
+let x=qs[i];nivel.textContent='Nível: '+x.n;pts.textContent=p;num.textContent=i+1;progress.style.width=(i/15*100)+'%';q.textContent=x.q;ans.innerHTML='';x.g?draw(x.g):graph.style.display='none';x.a.forEach((op,idx)=>{let b=document.createElement('button');b.textContent=op;b.onclick=()=>resp(idx);ans.appendChild(b);});}
+function resp(idx){document.querySelectorAll('#ans button').forEach((b,j)=>{b.disabled=true;if(j===qs[i].c)b.classList.add('correct');if(j===idx&&j!==qs[i].c)b.classList.add('wrong');});if(idx===qs[i].c)p++;setTimeout(()=>{i++;load();},1000);}
+function start(){qs=base.map(shuffleQ);i=0;p=0;end.style.display='none';load();}
+start();
+</script></body></html>
